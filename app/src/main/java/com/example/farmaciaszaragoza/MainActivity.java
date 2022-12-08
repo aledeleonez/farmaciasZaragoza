@@ -16,19 +16,26 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
+
+    private String URL = "http://www.zaragoza.es/georref/json/hilo/farmacias_Equipamiento";
+    private List<Farmacia> farmacias;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        ObtenerDatos datos = new ObtenerDatos();
+        datos.execute(URL);
+
     }
 
     private class ObtenerDatos extends AsyncTask<String, Void, Void>{
         private String resultado;
-        private String URL = "http://www.zaragoza.es/georref/json/hilo/farmacias_Equipamiento";
+
 
         @Override
         protected Void doInBackground(String... strings) {
@@ -59,14 +66,12 @@ public class MainActivity extends AppCompatActivity {
                     for (int i = 0; i < jsonArray.length(); i++) {
                         try {
                             Farmacia farmacia = new Farmacia();
-                            evento.setNombre(jsonArray.getJSONObject(i).getString("title"));
-                            evento.setDescripcion(jsonArray.getJSONObject(i).getString("description"));
-                            evento.setDireccion(jsonArray.getJSONObject(i).getString("event-location"));
-                            evento.setPrecio(Float.parseFloat(jsonArray.getJSONObject(i).getString("price")));
-                            evento.setFecha(new Date());
-                            evento.setLatitud(jsonArray.getJSONObject(i).getJSONObject("location").getDouble("latitude"));
-                            evento.setLongitud(jsonArray.getJSONObject(i).getJSONObject("location").getDouble("longitude"));
-                            eventos.add(evento);
+                            farmacia.setNombre(jsonArray.getJSONObject(i).getString("title"));
+                            farmacia.setDescripcion(jsonArray.getJSONObject(i).getString("description"));
+                            farmacia.setLink(jsonArray.getJSONObject(i).getString("link"));
+                            farmacia.setLatitud(jsonArray.getJSONObject(i).getJSONObject("coordinates").getDouble("latitude"));
+                            farmacia.setLongitud(jsonArray.getJSONObject(i).getJSONObject("coordinates").getDouble("longitude"));
+                            farmacias.add(farmacia);
                         } catch (JSONException jsone) {
                             jsone.printStackTrace();
                         }
